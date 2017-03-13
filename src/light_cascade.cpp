@@ -3,7 +3,6 @@
 #include "IRReadOnlyRemote.h"
 #include "magic_remote.h"
 
-#define IR_PIN 2  // must be interrupt capable pin (2 or 3)
 
 #define DEBUG 1
 #define Debug if (DEBUG) Serial
@@ -55,7 +54,7 @@ static void eeprom_update()
 	eeprom_needs_update = false;
 	EEPROM.put(0, settings);
 
-	Debug.print("EEPROM Interval=");
+	Debug.print("EEPROM update Interval=");
 	Debug.print(settings.on_time);
 	Debug.print(" Gap=");
 	Debug.println(settings.gap_time);
@@ -201,6 +200,8 @@ static void state_machine_run()
 
 /********** Remote control **********/
 
+#define IR_PIN 2  // must be interrupt capable pin (2 or 3)
+
 #if NEC_ONLY
 static IRReadOnlyRemote remote(IR_PIN);		// NEC
 #else
@@ -213,9 +214,6 @@ static void remote_control(void)
 	keycode = remote.read();
 	if (keycode) {
 		mapped_keycode = map_key(keycode);
-		Debug.print(mapped_keycode, HEX);
-		Debug.print("   ");
-		Debug.println(keycode, HEX);
         switch(mapped_keycode) {
             case MAGIC_flash:
     			settings.on_time += 100;
@@ -233,8 +231,18 @@ static void remote_control(void)
     			settings.gap_time -= 1;
     			eeprom_needs_update = true;
     			break;
-
+			case 0:
+				return;
+			default:
+				Debug.print("Unhandled key ");
+				Debug.println(mapped_keycode, HEX);
+				return;
         }
+		Debug.print("Interval=");
+		Debug.print(settings.on_time);
+		Debug.print(" Gap=");
+		Debug.println(settings.gap_time);
+
 	}
 }
 
