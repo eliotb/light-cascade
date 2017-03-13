@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 #include <Arduino.h>
 #include "EEPROM.h"
 #include "IRReadOnlyRemote.h"
@@ -84,9 +85,9 @@ static void eeprom_init(void)
 		settings.magic = EEPROM_MAGIC;
 		settings.on_time = 1000;
 		settings.gap_time = 0;
+		eeprom_needs_update = true;
 		Debug.print("Initialize ");
 	}
-	eeprom_update();
 }
 
 /********** Lights object *********/
