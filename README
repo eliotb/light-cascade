@@ -1,0 +1,32 @@
+ARDUINO LIGHT CONTROLLER
+========================
+
+This is an 8 output light controller.
+
+The controller switches on each of 8 outputs in turn, with programmable
+on time and gap or overlap on the transition.
+
+The timing settings can be changed using infrared remote control or serial, and are
+stored in EEPROM
+
+I used a Duemilanove.
+
+Required libraries
+------------------
+IRReadOnlyRemote git+https://github.com/otryti/IRReadOnlyRemote
+
+Pin assignments
+---------------
+
+2 - IR sensor input
+13, 12, 11, 10, 9, 8, 7, 6 - control outputs
+
+
+Serial control
+--------------
+115200 baud
+q increase on time by 100ms
+a decrease on time by 100ms
+w increase gap time by 1ms
+s decrease gap time by 1ms
+
