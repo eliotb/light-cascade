@@ -85,15 +85,15 @@ struct Lights lights = {pins, ARRAY_SIZE(pins), 0};
 static void light_on(int light)
 {
   digitalWrite(light, HIGH);
-  Debug.print(light);
-  Debug.println(" ON");
+  //Debug.print(light);
+  //Debug.println(" ON");
 }
 
 static void light_off(int light)
 {
   digitalWrite(light, LOW);
-  Debug.print(light);
-  Debug.println(" OFF");
+  //Debug.print(light);
+  //Debug.println(" OFF");
 }
 
 static void light_init()
@@ -214,36 +214,45 @@ static void remote_control(void)
 	keycode = remote.read();
 	if (keycode) {
 		mapped_keycode = map_key(keycode);
-        switch(mapped_keycode) {
-            case MAGIC_flash:
-    			settings.on_time += 100;
-    			eeprom_needs_update = true;
-    			break;
-    		case MAGIC_strobe:
-    			settings.on_time -= 100;
-    			eeprom_needs_update = true;
-    			break;
-    		case MAGIC_fade:
-    			settings.gap_time += 1;
-    			eeprom_needs_update = true;
-    			break;
-    		case MAGIC_smooth:
-    			settings.gap_time -= 1;
-    			eeprom_needs_update = true;
-    			break;
-			case 0:
-				return;
-			default:
-				Debug.print("Unhandled key ");
-				Debug.println(mapped_keycode, HEX);
-				return;
-        }
-		Debug.print("Interval=");
-		Debug.print(settings.on_time);
-		Debug.print(" Gap=");
-		Debug.println(settings.gap_time);
-
+	} else if (Serial.available() > 0) {
+		mapped_keycode = Serial.read();
+		last_press = millis();
+	} else {
+		mapped_keycode = 0;
 	}
+
+    switch(mapped_keycode) {
+        case MAGIC_flash:
+		case 'q':
+			settings.on_time += 100;
+			eeprom_needs_update = true;
+			break;
+		case MAGIC_strobe:
+		case 'a':
+			settings.on_time -= 100;
+			eeprom_needs_update = true;
+			break;
+		case MAGIC_fade:
+		case 'w':
+			settings.gap_time += 1;
+			eeprom_needs_update = true;
+			break;
+		case MAGIC_smooth:
+		case 's':
+			settings.gap_time -= 1;
+			eeprom_needs_update = true;
+			break;
+		case 0:
+			return;
+		default:
+			Debug.print("Unhandled key ");
+			Debug.println(mapped_keycode, HEX);
+			return;
+    }
+	Serial.print("Interval=");
+	Serial.print(settings.on_time);
+	Serial.print(" Gap=");
+	Serial.println(settings.gap_time);
 }
 
 /********** Interface to Arduino framework **********/
@@ -254,8 +263,8 @@ void setup()
     light_init();
     state_machine_init();
 
-    Debug.begin(115200);
-    Debug.println("Light cascade start");
+    Serial.begin(115200);
+    Serial.println("Light cascade start");
 }
 
 void loop()
