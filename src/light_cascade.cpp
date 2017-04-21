@@ -40,6 +40,9 @@ enum {
 static unsigned long last_press = 0;
 static unsigned long keycode_down = 0;
 
+/** Has the 'keyboard' been idle for at least
+given time
+*/
 static bool key_idle(unsigned long time)
 {
 	return (millis() - last_press) >= time;
@@ -58,9 +61,9 @@ static unsigned long map_key(unsigned long keycode)
 /********** Settings object in EEPROM *********/
 
 struct Settings {
-    int magic;
-    int on_time;
-    int gap_time;  // -ve = overlap, +ve = gap_time milliseconds
+    int magic;  ///< magic number indicating valid eeprom layout
+    int on_time;  ///< milliseconds
+    int gap_time;  ///< milliseconds -ve = overlap, +ve
 };
 
 
@@ -68,6 +71,14 @@ struct Settings settings  = {1000, 0};
 
 static const int EEPROM_MAGIC = 0xBEEF;
 static bool eeprom_needs_update = true;
+
+static void eeprom_print()
+{
+	Serial.print("EEPROM Interval=");
+	Serial.print(settings.on_time);
+	Serial.print(" Gap=");
+	Serial.println(settings.gap_time);
+}
 
 static void eeprom_update()
 {
@@ -80,10 +91,8 @@ static void eeprom_update()
 	eeprom_needs_update = false;
 	EEPROM.put(0, settings);
 
-	Debug.print("EEPROM update Interval=");
-	Debug.print(settings.on_time);
-	Debug.print(" Gap=");
-	Debug.println(settings.gap_time);
+	if (DEBUG)
+		eeprom_print();
 }
 
 static void eeprom_init(void)
@@ -96,6 +105,7 @@ static void eeprom_init(void)
 		eeprom_needs_update = true;
 		Debug.print("Initialize ");
 	}
+	eeprom_print();
 }
 
 /********** Lights object *********/
@@ -112,15 +122,15 @@ struct Lights lights = {pins, ARRAY_SIZE(pins), 0};
 static void light_on(int light)
 {
   digitalWrite(light, HIGH);
-  //Debug.print(light);
-  //Debug.println(" ON");
+  Debug.print(light);
+  Debug.println(" ON");
 }
 
 static void light_off(int light)
 {
   digitalWrite(light, LOW);
-  //Debug.print(light);
-  //Debug.println(" OFF");
+  Debug.print(light);
+  Debug.println(" OFF");
 }
 
 static void light_init()
@@ -295,7 +305,7 @@ void setup()
     state_machine_init();
 
     Serial.begin(115200);
-    Serial.println("Light cascade start");
+    Serial.println("Light cascade, qa=on, ws=off");
 }
 
 void loop()
