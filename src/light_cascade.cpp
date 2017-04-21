@@ -20,7 +20,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "EEPROM.h"
 #include "IRReadOnlyRemote.h"
 #include "magic_remote.h"
+enum {
+	APPLE_up = 0x77e1d0aa,
+	APPLE_down = 0x77e1b0aa,
+	APPLE_left = 0x77e110aa,
+	APPLE_right = 0x77e1e0aa,
+	APPLE_menu = 0x77e140aa,
+	APPLE_play = 0x77e120aa,
 
+};
 
 #define DEBUG 1
 #define Debug if (DEBUG) Serial
@@ -240,32 +248,36 @@ static void remote_control(void)
 	}
 
     switch(mapped_keycode) {
-        case MAGIC_flash:
-		case 'q':
-			settings.on_time += 100;
-			eeprom_needs_update = true;
-			break;
-		case MAGIC_strobe:
-		case 'a':
-			settings.on_time -= 100;
-			eeprom_needs_update = true;
-			break;
-		case MAGIC_fade:
-		case 'w':
-			settings.gap_time += 1;
-			eeprom_needs_update = true;
-			break;
-		case MAGIC_smooth:
-		case 's':
-			settings.gap_time -= 1;
-			eeprom_needs_update = true;
-			break;
-		case 0:
-			return;
-		default:
-			Debug.print("Unhandled key ");
-			Debug.println(mapped_keycode, HEX);
-			return;
+    	case APPLE_up:
+    	case MAGIC_flash:
+	case 'q':
+		settings.on_time += 100;
+		eeprom_needs_update = true;
+		break;
+	case APPLE_down:
+	case MAGIC_strobe:
+	case 'a':
+		settings.on_time -= 100;
+		eeprom_needs_update = true;
+		break;
+	case APPLE_right:
+	case MAGIC_fade:
+	case 'w':
+		settings.gap_time += 5;
+		eeprom_needs_update = true;
+		break;
+	case APPLE_left:
+	case MAGIC_smooth:
+	case 's':
+		settings.gap_time -= 5;
+		eeprom_needs_update = true;
+		break;
+	case 0:
+		return;
+	default:
+		Debug.print("Unhandled key ");
+		Debug.println(mapped_keycode, HEX);
+		return;
     }
 	Serial.print("Interval=");
 	Serial.print(settings.on_time);
