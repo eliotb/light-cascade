@@ -17,18 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <Arduino.h>
-#include "EEPROM.h"
-#include "IRReadOnlyRemote.h"
+#include <EEPROM.h>
+#include <IRReadOnlyRemote.h>
 #include "magic_remote.h"
-enum {
-	APPLE_up = 0x77e1d0aa,
-	APPLE_down = 0x77e1b0aa,
-	APPLE_left = 0x77e110aa,
-	APPLE_right = 0x77e1e0aa,
-	APPLE_menu = 0x77e140aa,
-	APPLE_play = 0x77e120aa,
-
-};
+#include "apple_remote.h"
 
 #define DEBUG 1
 #define Debug if (DEBUG) Serial
@@ -40,8 +32,7 @@ enum {
 static unsigned long last_press = 0;
 static unsigned long keycode_down = 0;
 
-/** Has the 'keyboard' been idle for at least
-given time
+/** Has the 'keyboard' been idle for at least given time
 */
 static bool key_idle(unsigned long time)
 {
