@@ -105,7 +105,8 @@ struct Lights {
     int current_idx;
 };
 
-static const uint8_t pins[] = {13, 12, 11, 10, 9, 8, 7, 6};
+// pins 6-13 in some order
+static const uint8_t pins[] = {9, 7, 13, 8, 11, 6, 12, 10};
 struct Lights lights = {pins, ARRAY_SIZE(pins), 0};
 
 static void light_on(int light)
