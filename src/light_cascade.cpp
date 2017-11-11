@@ -149,6 +149,11 @@ static void increment_pin()
     lights.current_idx = (lights.current_idx + 1) % lights.num_pins;
 }
 
+static void decrement_pin()
+{
+    lights.current_idx = (lights.current_idx - 1) % lights.num_pins;
+}
+
 /********** Timer object **********/
 struct Timer {
     unsigned long start_millis;
@@ -273,6 +278,18 @@ static void remote_control(void)
 	case 's':
 		settings.gap_time -= 5;
 		eeprom_needs_update = true;
+		break;
+	case 'n':
+	case APPLE_menu:
+		timer_start(timer, 60000);
+		light_off(current_pin());
+		increment_pin();
+		light_on(current_pin());
+		break;
+	case 'p':
+		light_off(current_pin());
+		decrement_pin();
+		light_on(current_pin());
 		break;
 	case 0:
 		return;

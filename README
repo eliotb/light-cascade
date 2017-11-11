@@ -29,4 +29,5 @@ q increase on time by 100ms
 a decrease on time by 100ms
 w increase gap time by 1ms
 s decrease gap time by 1ms
-
+n next light, suspend cycling 1 minute
+p previous light, suspend cycling 1 minute
