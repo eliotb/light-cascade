@@ -151,7 +151,7 @@ static void increment_pin()
 
 static void decrement_pin()
 {
-    lights.current_idx = (lights.current_idx - 1) % lights.num_pins;
+    lights.current_idx = (lights.current_idx + lights.num_pins - 1) % lights.num_pins;
 }
 
 /********** Timer object **********/
@@ -281,14 +281,13 @@ static void remote_control(void)
 		break;
 	case 'n':
 	case APPLE_menu:
+	case 'p':
 		timer_start(timer, 60000);
 		light_off(current_pin());
-		increment_pin();
-		light_on(current_pin());
-		break;
-	case 'p':
-		light_off(current_pin());
-		decrement_pin();
+		if (mapped_keycode == 'p')
+			decrement_pin();
+		else
+			increment_pin();
 		light_on(current_pin());
 		break;
 	case 0:
